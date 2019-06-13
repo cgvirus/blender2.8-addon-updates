@@ -72,7 +72,7 @@ class InstantMeshesRemesh(bpy.types.Operator):
     meshname = None
  
     def execute(self, context):
-        exe = context.preferences.addons[__name__].preferences.filepath
+        exe = '/home/production/Apps/Graphic_Apps/instant-meshes-linux/Instant Meshes'
         orig = os.path.join(tempfile.gettempdir(),'original.obj')
         output = os.path.join(tempfile.gettempdir(),'out.obj')
 
@@ -136,6 +136,7 @@ class InstantMeshesRemesh(bpy.types.Operator):
                 subprocess.run(cmd)
             
             bpy.ops.import_scene.obj(filepath=output, 
+                                    use_split_objects=False,
                                     use_smooth_groups=False,
                                     use_image_search=False,
                                     axis_forward='-Z', axis_up='Y')
@@ -153,7 +154,13 @@ class InstantMeshesRemesh(bpy.types.Operator):
             for other_obj in bpy.data.objects:
                 other_obj.select_set(state= False)
             imported_mesh.select_set (state = True)
+            imported_mesh.active_material.use_nodes = False
+            imported_mesh.data.use_auto_smooth = False
+
             bpy.ops.object.shade_flat()
+            bpy.ops.mesh.customdata_custom_splitnormals_clear()
+            
+
             mesh.select_set (state = True)
             bpy.context.view_layer.objects.active = mesh
             bpy.ops.object.data_transfer(use_reverse_transfer=False, 
@@ -164,9 +171,10 @@ class InstantMeshesRemesh(bpy.types.Operator):
                                             layers_select_dst='ACTIVE', mix_mode='REPLACE', mix_factor=1.0)
             mesh.select_set(state= False)
             mesh.hide_viewport = True
-            #mesh.hide_render = True
             imported_mesh.select_set(state= False)
             os.remove(output)
+            bpy.context.space_data.overlay.show_wireframes = True
+
             return {'FINISHED'}
         else:
             return {'FINISHED'}
