@@ -72,7 +72,7 @@ class InstantMeshesRemesh(bpy.types.Operator):
     meshname = None
  
     def execute(self, context):
-        exe = '/home/production/Apps/Graphic_Apps/instant-meshes-linux/Instant Meshes'
+        exe = context.preferences.addons[__name__].preferences.filepath
         orig = os.path.join(tempfile.gettempdir(),'original.obj')
         output = os.path.join(tempfile.gettempdir(),'out.obj')
 
